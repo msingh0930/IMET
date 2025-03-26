@@ -3,14 +3,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+#gets user input for what link they want to scrape
+urlgetter = input("Enter link here: ")
 #opens the browsor to look up the url
 d = webdriver.Safari()
 #url that will be scraped
-url = "https://www.princegeorgescountymd.gov/departments-offices/environment/stormwater-management/clean-water-act"
+url = urlgetter
 #this navigates to the given url
 d.get(url)
-
 #need to make sure that the website is able to load, therefore making it wait 15
 #seconds to make sure it loads
 waitingTime = WebDriverWait(d, 15)
@@ -35,7 +35,6 @@ try:
         By.CLASS_NAME, "field-name--body"
     )))
     #prints the content that was scraped
-    print("\n--- Page Content ---\n")
     print(content_div.text)
 
 
