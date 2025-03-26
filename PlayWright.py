@@ -30,6 +30,27 @@ async def scrape_with_playwright():
             #prints the content that was scraped
             print("Scraped content:\n", content.strip() if content else "No content found.")
 
+            #uses content only found in the main content of the page
+            main_content = page.locator(".field-name--body")
+            link_elements = await main_content.locator("a").all()
+
+            #creates a dict for all of the hyperlinks
+            hyperlink_dict = []
+
+            for link in link_elements:
+                href = await link.get_attribute("href")
+                #makes sure that the href is a hyperlink and not a link to a different part of the page
+                if href and href.startswith("http"):
+                    #appends the hyperlink to the dict
+                    hyperlink_dict.append(href)
+                if href and href.startswith("https"):
+                    #appends the hyperlink to the dict
+                    hyperlink_dict.append(href)
+
+            print("\nHyperlinks found in main content only:\n")
+            for link in hyperlink_dict:
+                print(link)
+
         #exception handler in case any errors occur
         except Exception as e:
             print("Error during scraping:", e)
