@@ -38,18 +38,18 @@ async def scrape_with_playwright():
             hyperlink_dict = []
 
             for link in link_elements:
+                #extracts the actual hyperlink
                 href = await link.get_attribute("href")
+                #extracts the text that the hyperlink is titled
+                title = await link.text_content()
                 #makes sure that the href is a hyperlink and not a link to a different part of the page
                 if href and href.startswith("http"):
-                    #appends the hyperlink to the dict
-                    hyperlink_dict.append(href)
-                if href and href.startswith("https"):
-                    #appends the hyperlink to the dict
-                    hyperlink_dict.append(href)
+                    #adds the hyperlink and its title to the list
+                    hyperlink_dict.append((title.strip(), href))
 
             print("\nHyperlinks found in main content only:\n")
-            for link in hyperlink_dict:
-                print(link)
+            for title, link in hyperlink_dict:
+                print(f"{title}: {link}")
 
         #exception handler in case any errors occur
         except Exception as e:
