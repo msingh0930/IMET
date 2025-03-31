@@ -56,7 +56,7 @@ async def scrape_with_playwright():
             print("Error during scraping:", e)
 
         #closes the browser that was opened earlier
-            finally:
+        finally:
             await browser.close()
 
 # Run the async function
