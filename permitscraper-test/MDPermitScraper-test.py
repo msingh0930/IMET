@@ -1,8 +1,12 @@
 import asyncio
-from playwright.async_api import async_playwright
 import csv
-import os
 import re
+
+# TODO implement aiosql once everything else works correctly
+# import aiosql
+# import aiosqlite
+
+from playwright.async_api import async_playwright
 
 def clean_text(text):
     # Aggressively strip extra whitespace, line breaks, and control characters
@@ -41,16 +45,18 @@ async def scrape_water_permits():
 
                     # Get main text content
                     try:
-                        content = await new_page.locator("main, .field-name--body, body").text_content(timeout=10000)
-                        content = clean_text(content) if content else "No content found."
+                        content = "No content found."
+                        if await new_page.query_selector("main") is not None:
+                            page_content = await new_page.locator("main").text_content(timeout=10000)
+                            content = clean_text(page_content) if page_content else "Error occured getting page text content."
                     except Exception as e:
                         content = f"Error scraping content: {str(e)}"
 
                     # Extract all PDF or downloadable links
                     file_links = []
                     file_elements = await new_page.locator("a").all()
-                    for f in file_elements:
-                        file_href = await f.get_attribute("href")
+                    for file in file_elements:
+                        file_href = await file.get_attribute("href")
                         if file_href and (".pdf" in file_href.lower() or ".doc" in file_href.lower()):
                             if not file_href.startswith("http"):
                                 file_href = f"https://mde.maryland.gov{file_href}"
@@ -70,11 +76,11 @@ async def scrape_water_permits():
 
         # Save to CSV
         keys = ["Permit Number", "Permit Title", "Permit URL", "Cleaned Content", "PDF/Download Links"]
-        with open(output_file, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=keys)
+        with open(output_file, "w", newline="", encoding="utf-8") as file:
+            writer = csv.DictWriter(file, fieldnames=keys)
             writer.writeheader()
             writer.writerows(data_rows)
 
-        print(f"\n✅ All permits scraped and saved to: {output_file}")
+        print(f"\nPermits scraped and saved to: {output_file}")
 
 asyncio.run(scrape_water_permits())
