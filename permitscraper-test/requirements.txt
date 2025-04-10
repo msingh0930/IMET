@@ -1,1 +1,2 @@
+aiosqlite==0.21.0
 playwright==1.51.0
