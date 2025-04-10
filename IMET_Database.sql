@@ -46,7 +46,7 @@ permitID INT PRIMARY KEY,
 permitName VARCHAR(100),
 renewalPeriod VARCHAR(50),
 permitDocs TEXT,
-permitlink VARCHAR(100),
+permitLink VARCHAR(100),
 regulationID INT,
 FOREIGN KEY (regulationID) REFERENCES Regulations(regulationID)
 );
