@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `habcti`.`Regulations` (
   `regulationName` VARCHAR(128) NULL DEFAULT NULL,
   `regulationType` VARCHAR(45) NULL DEFAULT NULL,
   `agency` VARCHAR(45) NULL DEFAULT NULL,
-  `lastUpdated` DATETIME NULL DEFAULT CURRENT_TIMESTAMP(),
+  `lastUpdated` DATETIME NULL DEFAULT NOW(),
   `regulationLink` VARCHAR(128) NULL DEFAULT NULL,
   `regulationNotes` TEXT NULL,
   `effectiveDate` DATE NULL,
