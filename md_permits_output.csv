@@ -7,7 +7,7 @@ Permit Number,Permit Title,Permit URL,Cleaned Content,PDF/Download Links
 3.06,3.06 Toxic Materials Permit,https://mde.maryland.gov/programs/permits/Documents/2008PermitGuide/WMA/3.06.pdf,No content found.,
 3.07,3.07 Water and Sewerage Construction Permit,https://mde.maryland.gov/programs/permits/Documents/2008PermitGuide/WMA/3.07.pdf,No content found.,
 3.08,3.08 - 3.13 Mining Permits,https://mde.maryland.gov/programs/permits/LandManagementPermits/Pages/index.aspx#3.08,"Error scraping content: Locator.text_content: Error: strict mode violation: locator(""main, .field-name--body, body"") resolved to 2 elements:
-    1) <body>…</body> aka locator(""body"")
+    1) <body class="" ms-backgroundImage"">…</body> aka locator(""body"")
     2) <main id=""mdgovMain"" class=""mdgov-main"">…</main> aka locator(""#mdgovMain"")
 
 Call log:
@@ -28,7 +28,7 @@ Call log:
 3.27,3.27 Waterworks and Waste Systems Operator Certification,https://mde.maryland.gov/programs/permits/Documents/2008PermitGuide/WMA/3.27.pdf,No content found.,
 3.28,3.28,https://mde.maryland.gov/programs/permits/Documents/2008PermitGuide/WMA/3.28.pdf,No content found.,
 3.29,3.29 Marine Contractor License,https://mde.maryland.gov/programs/permits/EnvironmentalBoards/Pages/boardofwelldrillers.aspx,"Error scraping content: Locator.text_content: Error: strict mode violation: locator(""main, .field-name--body, body"") resolved to 2 elements:
-    1) <body>…</body> aka locator(""body"")
+    1) <body class="" ms-backgroundImage"">…</body> aka locator(""body"")
     2) <main id=""mdgovMain"" class=""mdgov-main"">…</main> aka locator(""#mdgovMain"")
 
 Call log:
