@@ -150,7 +150,6 @@ CREATE TABLE IF NOT EXISTS `habcti`.`permits` (
   `permitLink` VARCHAR(128) NULL DEFAULT NULL,
   `permitNotes` TEXT NULL DEFAULT NULL,
   `regulationID` INT NULL DEFAULT NULL,
-  `federalRegulationID` INT NULL DEFAULT NULL,
   PRIMARY KEY (`permitID`),
   INDEX `regulationID` (`regulationID` ASC) VISIBLE,
   CONSTRAINT `permits_ibfk_1`
@@ -210,11 +209,11 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `habcti`.`permits_tags`
+-- Table `habcti`.`permitstags`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `habcti`.`permits_tags` ;
+DROP TABLE IF EXISTS `habcti`.`permitstags` ;
 
-CREATE TABLE IF NOT EXISTS `habcti`.`permits_tags` (
+CREATE TABLE IF NOT EXISTS `habcti`.`permitstags` (
   `permitTagID` INT NOT NULL,
   `tag` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`permitTagID`))
@@ -224,21 +223,25 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `habcti`.`permits_tags_list`
+-- Table `habcti`.`permittaglist`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `habcti`.`permits_tags_list` ;
+DROP TABLE IF EXISTS `habcti`.`permittaglist` ;
 
-CREATE TABLE IF NOT EXISTS `habcti`.`permits_tags_list` (
+CREATE TABLE IF NOT EXISTS `habcti`.`permittaglist` (
+  `permitstags_permitTagID` INT NOT NULL,
   `permits_permitID` INT NOT NULL,
-  `permittags_tagID` INT NOT NULL,
-  PRIMARY KEY (`permits_permitID`, `permittags_tagID`),
-  INDEX `permittags_tagID` (`permittags_tagID` ASC) VISIBLE,
-  CONSTRAINT `permitstags_ibfk_1`
+  PRIMARY KEY (`permitstags_permitTagID`, `permits_permitID`),
+  INDEX `fk_permittaglist_permits1_idx` (`permits_permitID` ASC) VISIBLE,
+  CONSTRAINT `fk_permittaglist_permitstags1`
+    FOREIGN KEY (`permitstags_permitTagID`)
+    REFERENCES `habcti`.`permitstags` (`permitTagID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_permittaglist_permits1`
     FOREIGN KEY (`permits_permitID`)
-    REFERENCES `habcti`.`permits` (`permitID`),
-  CONSTRAINT `permitstags_ibfk_2`
-    FOREIGN KEY (`permittags_tagID`)
-    REFERENCES `habcti`.`permits_tags` (`permitTagID`))
+    REFERENCES `habcti`.`permits` (`permitID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -259,51 +262,55 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `habcti`.`regulationstags`
+-- Table `habcti`.`regulationtaglist`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `habcti`.`regulationstags` ;
+DROP TABLE IF EXISTS `habcti`.`regulationtaglist` ;
 
-CREATE TABLE IF NOT EXISTS `habcti`.`regulationstags` (
+CREATE TABLE IF NOT EXISTS `habcti`.`regulationtaglist` (
   `regulations_regulationID` INT NOT NULL,
   `regulationtags_regulationTagID` INT NOT NULL,
   PRIMARY KEY (`regulations_regulationID`, `regulationtags_regulationTagID`),
-  INDEX `regulationtags_regulationTagID` (`regulationtags_regulationTagID` ASC) VISIBLE,
-  CONSTRAINT `regulationstags_ibfk_1`
+  INDEX `fk_regulationtaglist_regulationtags1_idx` (`regulationtags_regulationTagID` ASC) VISIBLE,
+  CONSTRAINT `fk_regulationtaglist_regulations1`
     FOREIGN KEY (`regulations_regulationID`)
-    REFERENCES `habcti`.`regulations` (`regulationID`),
-  CONSTRAINT `regulationstags_ibfk_2`
+    REFERENCES `habcti`.`regulations` (`regulationID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_regulationtaglist_regulationtags1`
     FOREIGN KEY (`regulationtags_regulationTagID`)
-    REFERENCES `habcti`.`regulationtags` (`regulationTagID`))
+    REFERENCES `habcti`.`regulationtags` (`regulationTagID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `habcti`.`state_regulations`
+-- Table `habcti`.`stateregulations`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `habcti`.`state_regulations` ;
+DROP TABLE IF EXISTS `habcti`.`stateregulations` ;
 
-CREATE TABLE IF NOT EXISTS `habcti`.`state_regulations` (
+CREATE TABLE IF NOT EXISTS `habcti`.`stateregulations` (
   `state_regulations_ID` INT NOT NULL,
   `regulations_regulationID` INT NOT NULL,
   `state_stateID` INT NOT NULL,
   `localgov_localGovID` INT NOT NULL,
   PRIMARY KEY (`state_regulations_ID`),
-  INDEX `fk_state_regulations_regulations1_idx` (`regulations_regulationID` ASC) VISIBLE,
-  INDEX `fk_state_regulations_state1_idx` (`state_stateID` ASC) VISIBLE,
-  INDEX `fk_state_regulations_localgov1_idx` (`localgov_localGovID` ASC) VISIBLE,
-  CONSTRAINT `fk_state_regulations_regulations1`
+  INDEX `fk_stateregulations_regulations1_idx` (`regulations_regulationID` ASC) VISIBLE,
+  INDEX `fk_stateregulations_state1_idx` (`state_stateID` ASC) VISIBLE,
+  INDEX `fk_stateregulations_localgov1_idx` (`localgov_localGovID` ASC) VISIBLE,
+  CONSTRAINT `fk_stateregulations_regulations1`
     FOREIGN KEY (`regulations_regulationID`)
     REFERENCES `habcti`.`regulations` (`regulationID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_state_regulations_state1`
+  CONSTRAINT `fk_stateregulations_state1`
     FOREIGN KEY (`state_stateID`)
     REFERENCES `habcti`.`state` (`stateID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_state_regulations_localgov1`
+  CONSTRAINT `fk_stateregulations_localgov1`
     FOREIGN KEY (`localgov_localGovID`)
     REFERENCES `habcti`.`localgov` (`localGovID`)
     ON DELETE NO ACTION
@@ -312,34 +319,34 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `habcti`.`local_regulations`
+-- Table `habcti`.`localregulations`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `habcti`.`local_regulations` ;
+DROP TABLE IF EXISTS `habcti`.`localregulations` ;
 
-CREATE TABLE IF NOT EXISTS `habcti`.`local_regulations` (
+CREATE TABLE IF NOT EXISTS `habcti`.`localregulations` (
   `local_regulations_ID` INT NOT NULL,
-  `regulations_regulationID` INT NOT NULL,
-  `localgov_localGovID` INT NOT NULL,
-  `state_stateID` INT NOT NULL,
   `county` VARCHAR(128) NULL,
   `city` VARCHAR(128) NULL,
+  `regulations_regulationID` INT NOT NULL,
+  `state_stateID` INT NOT NULL,
+  `localgov_localGovID` INT NOT NULL,
   PRIMARY KEY (`local_regulations_ID`),
-  INDEX `fk_local_regulations_regulations1_idx` (`regulations_regulationID` ASC) VISIBLE,
-  INDEX `fk_local_regulations_localgov1_idx` (`localgov_localGovID` ASC) VISIBLE,
-  INDEX `fk_local_regulations_state1_idx` (`state_stateID` ASC) VISIBLE,
-  CONSTRAINT `fk_local_regulations_regulations1`
+  INDEX `fk_localregulations_regulations1_idx` (`regulations_regulationID` ASC) VISIBLE,
+  INDEX `fk_localregulations_state1_idx` (`state_stateID` ASC) VISIBLE,
+  INDEX `fk_localregulations_localgov1_idx` (`localgov_localGovID` ASC) VISIBLE,
+  CONSTRAINT `fk_localregulations_regulations1`
     FOREIGN KEY (`regulations_regulationID`)
     REFERENCES `habcti`.`regulations` (`regulationID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_local_regulations_localgov1`
-    FOREIGN KEY (`localgov_localGovID`)
-    REFERENCES `habcti`.`localgov` (`localGovID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_local_regulations_state1`
+  CONSTRAINT `fk_localregulations_state1`
     FOREIGN KEY (`state_stateID`)
     REFERENCES `habcti`.`state` (`stateID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_localregulations_localgov1`
+    FOREIGN KEY (`localgov_localGovID`)
+    REFERENCES `habcti`.`localgov` (`localGovID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
