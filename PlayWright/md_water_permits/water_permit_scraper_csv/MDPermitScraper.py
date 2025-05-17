@@ -75,6 +75,6 @@ async def scrape_water_permits():
             writer.writeheader()
             writer.writerows(data_rows)
 
-        print(f"\n All permits scraped and saved to: {output_file}")
+        print(f"\nAll permits scraped and saved to: {output_file}")
 
 asyncio.run(scrape_water_permits())
