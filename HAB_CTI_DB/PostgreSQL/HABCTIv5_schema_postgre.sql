@@ -130,7 +130,6 @@ CREATE TABLE  "habcti"."permits" (
   "permitLink" VARCHAR(128) NULL DEFAULT NULL,
   "permitNotes" TEXT NULL DEFAULT NULL,
   "regulationID" INT NULL DEFAULT NULL,
-  "federalRegulationID" INT NULL DEFAULT NULL,
   PRIMARY KEY ("permitID"),
   CONSTRAINT "permits_ibfk_1"
     FOREIGN KEY ("regulationID")
@@ -180,11 +179,11 @@ CREATE TABLE  "habcti"."literature" (
 
 
 -- -----------------------------------------------------
--- Table "habcti"."permits_tags"
+-- Table "habcti"."permitstags"
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS "habcti"."permits_tags" CASCADE;
+DROP TABLE IF EXISTS "habcti"."permitstags" CASCADE;
 
-CREATE TABLE  "habcti"."permits_tags" (
+CREATE TABLE  "habcti"."permitstags" (
   "permitTagID" INT NOT NULL,
   "tag" VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY ("permitTagID"));
@@ -192,20 +191,24 @@ CREATE TABLE  "habcti"."permits_tags" (
 
 
 -- -----------------------------------------------------
--- Table "habcti"."permits_tags_list"
+-- Table "habcti"."permittaglist"
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS "habcti"."permits_tags_list" CASCADE;
+DROP TABLE IF EXISTS "habcti"."permittaglist" CASCADE;
 
-CREATE TABLE  "habcti"."permits_tags_list" (
+CREATE TABLE  "habcti"."permittaglist" (
+  "permitstags_permitTagID" INT NOT NULL,
   "permits_permitID" INT NOT NULL,
-  "permittags_tagID" INT NOT NULL,
-  PRIMARY KEY ("permits_permitID", "permittags_tagID"),
-  CONSTRAINT "permitstags_ibfk_1"
+  PRIMARY KEY ("permitstags_permitTagID", "permits_permitID"),
+  CONSTRAINT "fk_permittaglist_permitstags1"
+    FOREIGN KEY ("permitstags_permitTagID")
+    REFERENCES "habcti"."permitstags" ("permitTagID")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT "fk_permittaglist_permits1"
     FOREIGN KEY ("permits_permitID")
-    REFERENCES "habcti"."permits" ("permitID"),
-  CONSTRAINT "permitstags_ibfk_2"
-    FOREIGN KEY ("permittags_tagID")
-    REFERENCES "habcti"."permits_tags" ("permitTagID"));
+    REFERENCES "habcti"."permits" ("permitID")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
 
 
 
@@ -222,45 +225,49 @@ CREATE TABLE  "habcti"."regulationtags" (
 
 
 -- -----------------------------------------------------
--- Table "habcti"."regulationstags"
+-- Table "habcti"."regulationtaglist"
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS "habcti"."regulationstags" CASCADE;
+DROP TABLE IF EXISTS "habcti"."regulationtaglist" CASCADE;
 
-CREATE TABLE  "habcti"."regulationstags" (
+CREATE TABLE  "habcti"."regulationtaglist" (
   "regulations_regulationID" INT NOT NULL,
   "regulationtags_regulationTagID" INT NOT NULL,
   PRIMARY KEY ("regulations_regulationID", "regulationtags_regulationTagID"),
-  CONSTRAINT "regulationstags_ibfk_1"
+  CONSTRAINT "fk_regulationtaglist_regulations1"
     FOREIGN KEY ("regulations_regulationID")
-    REFERENCES "habcti"."regulations" ("regulationID"),
-  CONSTRAINT "regulationstags_ibfk_2"
+    REFERENCES "habcti"."regulations" ("regulationID")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT "fk_regulationtaglist_regulationtags1"
     FOREIGN KEY ("regulationtags_regulationTagID")
-    REFERENCES "habcti"."regulationtags" ("regulationTagID"));
+    REFERENCES "habcti"."regulationtags" ("regulationTagID")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
 
 
 
 -- -----------------------------------------------------
--- Table "habcti"."state_regulations"
+-- Table "habcti"."stateregulations"
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS "habcti"."state_regulations" CASCADE;
+DROP TABLE IF EXISTS "habcti"."stateregulations" CASCADE;
 
-CREATE TABLE  "habcti"."state_regulations" (
+CREATE TABLE  "habcti"."stateregulations" (
   "state_regulations_ID" INT NOT NULL,
   "regulations_regulationID" INT NOT NULL,
   "state_stateID" INT NOT NULL,
   "localgov_localGovID" INT NOT NULL,
   PRIMARY KEY ("state_regulations_ID"),
-  CONSTRAINT "fk_state_regulations_regulations1"
+  CONSTRAINT "fk_stateregulations_regulations1"
     FOREIGN KEY ("regulations_regulationID")
     REFERENCES "habcti"."regulations" ("regulationID")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT "fk_state_regulations_state1"
+  CONSTRAINT "fk_stateregulations_state1"
     FOREIGN KEY ("state_stateID")
     REFERENCES "habcti"."state" ("stateID")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT "fk_state_regulations_localgov1"
+  CONSTRAINT "fk_stateregulations_localgov1"
     FOREIGN KEY ("localgov_localGovID")
     REFERENCES "habcti"."localgov" ("localGovID")
     ON DELETE NO ACTION
@@ -268,31 +275,31 @@ CREATE TABLE  "habcti"."state_regulations" (
 
 
 -- -----------------------------------------------------
--- Table "habcti"."local_regulations"
+-- Table "habcti"."localregulations"
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS "habcti"."local_regulations" CASCADE;
+DROP TABLE IF EXISTS "habcti"."localregulations" CASCADE;
 
-CREATE TABLE  "habcti"."local_regulations" (
+CREATE TABLE  "habcti"."localregulations" (
   "local_regulations_ID" INT NOT NULL,
-  "regulations_regulationID" INT NOT NULL,
-  "localgov_localGovID" INT NOT NULL,
-  "state_stateID" INT NOT NULL,
   "county" VARCHAR(128) NULL,
   "city" VARCHAR(128) NULL,
+  "regulations_regulationID" INT NOT NULL,
+  "state_stateID" INT NOT NULL,
+  "localgov_localGovID" INT NOT NULL,
   PRIMARY KEY ("local_regulations_ID"),
-  CONSTRAINT "fk_local_regulations_regulations1"
+  CONSTRAINT "fk_localregulations_regulations1"
     FOREIGN KEY ("regulations_regulationID")
     REFERENCES "habcti"."regulations" ("regulationID")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT "fk_local_regulations_localgov1"
-    FOREIGN KEY ("localgov_localGovID")
-    REFERENCES "habcti"."localgov" ("localGovID")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_local_regulations_state1"
+  CONSTRAINT "fk_localregulations_state1"
     FOREIGN KEY ("state_stateID")
     REFERENCES "habcti"."state" ("stateID")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT "fk_localregulations_localgov1"
+    FOREIGN KEY ("localgov_localGovID")
+    REFERENCES "habcti"."localgov" ("localGovID")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
